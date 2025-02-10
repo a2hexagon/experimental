@@ -4,7 +4,7 @@
     <body>
 <div id="display">OrderForm_Date_year_time</div>
 <div id="current">Current Name</div>
-<form id="myForm" name="OrderForm_Date_year_time" action="" class="test" data-netlify="True">
+<form id="myForm" name="Orders_Date_year_time" action="" class="test" data-netlify="True">
     <label for="name" >
         <input type="text" id="name" name="name">
 
@@ -25,12 +25,12 @@
         const year = now.getFullYear();
         const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
         const day = String(now.getDate()).padStart(2, '0');
-        const hours = String(now.getHours()).padStart(2, '0');
+       // const hours = String(now.getHours()).padStart(2, '0');
        // const minutes = String(now.getMinutes()).padStart(2, '0');
        // const seconds = String(now.getSeconds()).padStart(2, '0');
 
         // Construct the new form name
-        return `OrderForm_${year}_${month}_${day}_${hours}`;
+        return `Orders_${year}_${month}_${day}`;
     }
 
     // Function to update the form name
