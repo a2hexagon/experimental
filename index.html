@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>experiments</head>
+    <body>
+<div id="display">OrderForm_Date_year_time</div>
+
+<form id="myForm" name="OrderForm_Date_year_time" action="" class="test" data-netlify="True">
+    <label for="name" >
+        <input type="text" id="name" name="name">
+
+    </label>
+<label for="lastname">
+    <input type="text" name="lastname" id="lastname">
+</label>
+<button type="submit">send</button>
+
+
+</form>
+
+
+<script>
+    // Function to generate a dynamic form name
+    function generateFormName() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+
+        // Construct the new form name
+        return `OrderForm_${year}_${month}_${day}_${hours}_${minutes}_${seconds}`;
+    }
+
+    // Function to update the form name
+    function updateFormName() {
+        const form = document.getElementById('myForm');
+        const newName = generateFormName();
+        form.name = newName;
+        document.getElementById("display").textContent= newName;
+        console.log(`Form name updated to: ${newName}`);
+    }
+
+    // Update the form name every 2 minutes (120,000 milliseconds)
+    setInterval(updateFormName, 120000);
+
+    // Initial call to set the form name immediately
+    updateFormName();
+</script>
+    </body>
+
+</html>
