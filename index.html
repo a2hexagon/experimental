@@ -3,7 +3,7 @@
     <head>experiments</head>
     <body>
 <div id="display">OrderForm_Date_year_time</div>
-
+<div id="current">Current Name</div>
 <form id="myForm" name="OrderForm_Date_year_time" action="" class="test" data-netlify="True">
     <label for="name" >
         <input type="text" id="name" name="name">
@@ -47,6 +47,7 @@
 
     // Initial call to set the form name immediately
     updateFormName();
+    document.getElementById("current").textContent= newName;
 </script>
     </body>
 
