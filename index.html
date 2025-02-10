@@ -26,23 +26,24 @@
         const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
         const day = String(now.getDate()).padStart(2, '0');
         const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
+       // const minutes = String(now.getMinutes()).padStart(2, '0');
        // const seconds = String(now.getSeconds()).padStart(2, '0');
 
         // Construct the new form name
-        return `OrderForm_${year}_${month}_${day}_${hours}_${minutes}`;
+        return `OrderForm_${year}_${month}_${day}_${hours}`;
     }
 
     // Function to update the form name
     function updateFormName() {
         const form = document.getElementById('myForm');
         const newName = generateFormName();
+    
         form.name = newName;
         document.getElementById("display").textContent= newName;
         console.log(`Form name updated to: ${newName}`);
     }
-
-    // Update the form name every 2 minutes (120,000 milliseconds)
+    
+    // Update the form name every 10 minutes (120,000 milliseconds)
     setInterval(updateFormName, 600000 );
 
     // Initial call to set the form name immediately
