@@ -1,67 +1,59 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
-    <head>experiments</head>
-    <body>
-<div id="display">OrderForm_Date_year_time</div>
-<div id="current">Current Name</div>
-<form id="myForm" name="" action="" class="test" data-netlify="True">
-    <label for="name" >
-        <input type="text" id="name" name="name">
-
-    </label>
-<label for="lastname">
-    <input type="text" name="lastname" id="lastname">
-</label>
-<button type="submit">send</button>
-
-
-</form>
-<form id="myForm" name="Orders2_2025_02_12" action="" class="test" data-netlify="True">
-    <label for="name" >
-        <input type="text" id="name" name="name">
-
-    </label>
-<label for="lastname">
-    <input type="text" name="lastname" id="lastname">
-</label>
-<button type="submit">send</button>
-
-
-</form>
-
-
-<script>
-    // Function to generate a dynamic form name
-    function generateFormName() {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-        const day = String(now.getDate()).padStart(2, '0');
-       // const hours = String(now.getHours()).padStart(2, '0');
-       // const minutes = String(now.getMinutes()).padStart(2, '0');
-       // const seconds = String(now.getSeconds()).padStart(2, '0');
-
-        // Construct the new form name
-        return `Orders_${year}_${month}_${day}`;
-    }
-
-    // Function to update the form name
-    function updateFormName() {
-        const form = document.getElementById('myForm');
-        const newName = generateFormName();
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Custom Form</title>
+</head>
+<body>
+  <h1>Contact Us</h1>
+  <form id="contactForm">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required><br><br>
     
-        form.name = newName;
-        document.getElementById("display").textContent= newName;
-        console.log(`Form name updated to: ${newName}`);
-    }
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required><br><br>
     
-    // Update the form name every 10 minutes (120,000 milliseconds)
-    setInterval(updateFormName, 600000 );
+    <label for="message">Message:</label>
+    <textarea id="message" name="message" required></textarea><br><br>
+    
+    <button type="submit">Submit</button>
+  </form>
 
-    // Initial call to set the form name immediately
-    updateFormName();
-    document.getElementById("current").textContent= newName;
-</script>
-    </body>
+  <p id="responseMessage"></p>
 
+  <script>
+    document.getElementById('contactForm').addEventListener('submit', function(event) {
+      event.preventDefault(); // Prevent the default form submission
+
+      // Get form data
+      const formData = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        message: document.getElementById('message').value
+      };
+
+      // Send data to Google Apps Script
+      fetch('https://script.google.com/macros/s/AKfycbwUxXnNQS3BBxfqsXwWL5PN7t8O4C2VGJqJn6JOP7gaou02f0UfNdhmyWKu3RdgvJa5/exec',
+      {
+        method: 'POST',
+        body: JSON.stringify(formData),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.result === "success") {
+          document.getElementById('responseMessage').textContent = "Thank you! Your form has been submitted.";
+        } else {
+          document.getElementById('responseMessage').textContent = "Oops! Something went wrong. Please try again.";
+        }
+      })
+      .catch(error => {
+        document.getElementById('responseMessage').textContent = "Oops! Something went wrong. Please try again.";
+      });
+    });
+  </script>
+</body>
 </html>
