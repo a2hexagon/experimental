@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shanti-Path | App Prototype</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS Styling (Includes new styles for language switcher) */
+        :root {
+            --primary-color: #005a9c; --secondary-color: #2e8b57; --accent-color: #ff9900;
+            --danger-color: #c0392b; --success-color: #27ae60; --dark-text: #333;
+            --light-text: #f4f7f6; --bg-color: #f4f7f6; --card-bg-color: #ffffff;
+            --border-radius: 12px; --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Poppins', 'Hind Siliguri', sans-serif; background-color: var(--bg-color); color: var(--dark-text); line-height: 1.6; }
+        .app-container { width: 100%; max-width: 600px; margin: 0 auto; height: 100vh; background-color: var(--bg-color); box-shadow: 0 10px 40px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow: hidden; }
+        @media (max-width: 600px) { .app-container { border-radius: 0; border: none; } }
+        .app-header { background-color: var(--card-bg-color); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; flex-shrink: 0; }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary-color); text-decoration: none; }
+        .logo span { color: var(--secondary-color); }
+        .header-controls { display: flex; align-items: center; gap: 15px; }
+        .lang-switcher { background: var(--bg-color); border: 1px solid #ddd; border-radius: 6px; padding: 5px 10px; font-family: 'Poppins', sans-serif; font-weight: 600; cursor: pointer; font-size: 0.8rem; }
+        .header-icons svg { width: 24px; height: 24px; color: #555; }
+        #app-content { flex-grow: 1; overflow-y: auto; padding: 20px; position: relative; }
+        .page { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        h2 { font-size: 1.8rem; color: var(--primary-color); margin-bottom: 20px; }
+        h3 { font-size: 1.2rem; color: var(--dark-text); font-weight: 600; margin-bottom: 15px; }
+        p { margin-bottom: 15px; font-family: 'Hind Siliguri', sans-serif; font-size: 1rem; color: #555;}
+        .bottom-nav { display: flex; justify-content: space-around; background-color: var(--card-bg-color); padding: 10px 0; border-top: 1px solid #ddd; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); flex-shrink: 0; }
+        .nav-btn { background: none; border: none; cursor: pointer; color: #777; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 0.7rem; font-family: 'Poppins', sans-serif; transition: color 0.2s ease; }
+        .nav-btn svg { width: 24px; height: 24px; }
+        .nav-btn.active { color: var(--primary-color); }
+        .card { background-color: var(--card-bg-color); padding: 20px; border-radius: var(--border-radius); box-shadow: var(--box-shadow); margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9rem; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; font-family: 'Hind Siliguri', sans-serif; }
+        .btn { display: block; width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: background-color 0.3s ease, transform 0.2s ease; }
+        .btn-primary { background-color: var(--primary-color); color: white; }
+        .btn-primary:hover { background-color: #004b85; }
+        .btn:active { transform: scale(0.98); }
+        .quick-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .action-card { background-color: var(--card-bg-color); border-radius: var(--border-radius); padding: 20px 15px; text-align: center; box-shadow: var(--box-shadow); cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; font-size: 0.9rem; font-weight: 500; color: var(--dark-text); }
+        .action-card:hover { transform: translateY(-5px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+        .action-card .icon { font-size: 2.5rem; margin-bottom: 10px; }
+        .alert-feed .alert-item { display: flex; gap: 15px; align-items: center; font-size: 0.9rem; padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px solid #eee; }
+        .alert-item .icon { font-size: 1.5rem; }
+        .alert-item.high { color: var(--danger-color); }
+        .alert-item.medium { color: var(--accent-color); }
+        #bangladesh-map svg { width: 100%; height: auto; stroke: #fff; stroke-width: 1.5px; }
+        #bangladesh-map path { fill: #a9cce3; transition: fill 0.3s ease; cursor: pointer; }
+        #bangladesh-map path:hover { fill: var(--accent-color); }
+        #bangladesh-map path.active-region { fill: var(--secondary-color); }
+        .map-info p { margin-bottom: 8px; font-size: 0.95rem; }
+        .map-info strong { color: var(--dark-text); }
+        .level-high { color: var(--danger-color); font-weight: bold; }
+        .level-medium { color: #f39c12; font-weight: bold; }
+        .level-low { color: var(--success-color); font-weight: bold; }
+        #report-form .icon { font-size: 3rem; text-align: center; margin-bottom: 10px; color: var(--primary-color); }
+        .zkp-notice { text-align: center; font-size: 0.8rem; color: #666; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .zkp-notice svg { width: 16px; height: 16px; color: var(--success-color); }
+        .form-success-message { text-align: center; padding: 10px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 8px; margin-top: 15px; display: none; }
+        .truth-packet-output { margin-top: 20px; opacity: 0; transform: scale(0.95); transition: opacity 0.5s, transform 0.5s; }
+        .truth-packet-output.visible { opacity: 1; transform: scale(1); }
+        .truth-packet-card { display: flex; align-items: center; gap: 15px; padding: 15px; border-radius: var(--border-radius); border-left-width: 5px; border-left-style: solid; }
+        .truth-packet-card .icon { font-size: 2.5rem; }
+        .truth-packet-card h5 { margin-bottom: 5px; font-size: 1.1rem; }
+        .verdict-false { border-left-color: var(--danger-color); background-color: #fbecec; }
+        .verdict-false .icon, .verdict-false h5 { color: var(--danger-color); }
+        #debunk-loader { text-align: center; display: none; margin-top: 20px; }
+        #debunk-loader p { font-size: 0.9rem; color: #555; }
+        .mission-card { border-left: 4px solid var(--secondary-color); margin-bottom: 15px; }
+        .mission-card h4 { color: var(--secondary-color); margin-bottom: 5px; font-size: 1.1rem;}
+        .progress-bar { width: 100%; height: 8px; background-color: #e0e0e0; border-radius: 4px; overflow: hidden; margin-top: 10px; }
+        .progress-bar div { height: 100%; background-color: var(--accent-color); border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <header class="app-header">
+            <a href="#" class="logo">Shanti<span>-Path</span></a>
+            <div class="header-controls">
+                <button class="lang-switcher" id="lang-switcher">BN</button>
+                <div class="header-icons">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" /></svg>
+                </div>
+            </div>
+        </header>
+
+        <main id="app-content">
+            <div id="page-home" class="page active">
+                <h2 data-lang-key="home_title">Welcome, Peacemaker</h2>
+                <div class="quick-actions">
+                    <div class="action-card" data-page-target="report"><div class="icon">🛡️</div><span data-lang-key="home_report">Report a Threat</span></div>
+                    <div class="action-card" data-page-target="atlas"><div class="icon">🗺️</div><span data-lang-key="home_atlas">Risk Atlas</span></div>
+                    <div class="action-card" data-page-target="debunk"><div class="icon">📰</div><span data-lang-key="home_debunk">Debunk Rumor</span></div>
+                    <div class="action-card" data-page-target="academy"><div class="icon">🎓</div><span data-lang-key="home_academy">My Academy</span></div>
+                </div>
+                <div class="card alert-feed">
+                    <h3 data-lang-key="home_alerts_title">Recent Alerts</h3>
+                    <div class="alert-item high"><div class="icon">🚨</div><p data-lang-key="home_alert1"><strong>Sylhet:</strong> High tension reported due to misinformation about land disputes.</p></div>
+                    <div class="alert-item medium"><div class="icon">⚠️</div><p data-lang-key="home_alert2"><strong>Dhaka:</strong> Increased online hate speech targeting student groups.</p></div>
+                </div>
+            </div>
+
+            <div id="page-atlas" class="page">
+                <h2 data-lang-key="atlas_title">Living Atlas</h2>
+                <p data-lang-key="atlas_subtitle">Click on a division to view its live data summary.</p>
+                <div class="card">
+                    <div id="bangladesh-map"><svg viewBox="0 0 300 450" xmlns="http://www.w3.org/2000/svg"><g transform="scale(0.8) translate(20, 20)"><path id="rangpur" d="M152 46l20 33-24 35-43 13-7-28 26-37z"/><path id="mymensingh" d="M174 81l38 17-23 50-40-34z"/><path id="sylhet" d="M214 99l47 14-19 64-50-28z"/><path id="rajshahi" d="M107 132l42-10-4 67-68 7z"/><path id="dhaka" d="M149 135l39 33-43 33 2 52-40-15z"/><path id="khulna" d="M69 207l65-5-35 40 17 62-67-37z"/><path id="barisal" d="M119 285l-17-60 40 12 19 73-42-25z"/><path id="chittagong" d="M192 153l50 26-70 142 31 71-62 33z"/></g></svg></div>
+                    <div class="map-info" id="map-info" style="margin-top: 15px;"><h4 data-lang-key="atlas_select_division">Select a Division</h4></div>
+                </div>
+            </div>
+
+            <div id="page-report" class="page">
+                <h2 data-lang-key="report_title">Submit Anonymous Report</h2>
+                <div class="card">
+                    <form id="report-form">
+                        <div class="icon">🛡️</div>
+                        <div class="form-group">
+                            <label for="incident-type" data-lang-key="report_threat_type_label">Type of Threat</label>
+                            <select id="incident-type" name="incident-type">
+                                <option data-lang-key="report_option_misinformation">Misinformation / Rumor</option>
+                                <option data-lang-key="report_option_hate_speech">Hate Speech</option>
+                                <option data-lang-key="report_option_incitement">Incitement to Violence</option>
+                                <option data-lang-key="report_option_gathering">Public Gathering Threat</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="details" data-lang-key="report_details_label">Details of the Incident</label>
+                            <textarea id="details" name="details" rows="4" data-lang-key="report_details_placeholder" placeholder="Describe what you saw or heard..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="location" data-lang-key="report_location_label">Location (District)</label>
+                            <input type="text" id="location" name="location" data-lang-key="report_location_placeholder" placeholder="e.g., Gazipur, Dhaka">
+                        </div>
+                        <div class="form-success-message" id="form-success" data-lang-key="report_success_message">Report Submitted Anonymously! Thank you.</div>
+                        <button type="submit" class="btn btn-primary" data-lang-key="report_submit_button">Submit Securely</button>
+                        <div class="zkp-notice"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" /></svg><span data-lang-key="report_zkp_notice">Your identity is protected with Zero-Knowledge Proofs.</span></div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="page-debunk" class="page">
+                <h2 data-lang-key="debunk_title">Truth Packet Generator</h2>
+                <p data-lang-key="debunk_subtitle">Enter a rumor to generate a shareable "Truth Packet" that debunks it.</p>
+                <div class="card">
+                    <div class="form-group">
+                        <label for="rumor-input" data-lang-key="debunk_input_label">Enter Rumor</label>
+                        <input type="text" id="rumor-input" data-lang-key="debunk_input_placeholder" placeholder="e.g., 'Schools will be closed tomorrow...'">
+                    </div>
+                    <button class="btn btn-primary" id="debunk-btn" data-lang-key="debunk_button">Analyze & Debunk</button>
+                    <div id="debunk-loader"><p data-lang-key="debunk_loader_text">🧠 Accessing knowledge base... Analyzing claim...</p></div>
+                    <div class="truth-packet-output" id="truth-packet-output"></div>
+                </div>
+            </div>
+            
+            <div id="page-academy" class="page">
+                <h2 data-lang-key="academy_title">Shanti-Prohori Academy</h2>
+                <p data-lang-key="academy_subtitle">Complete missions to build a more peaceful community and earn certifications.</p>
+                <div class="card mission-card">
+                     <h4 data-lang-key="academy_course1_title">Course: Digital Literacy 101</h4>
+                     <p data-lang-key="academy_course1_desc">Learn to spot fake news and manipulated images.</p>
+                     <div class="progress-bar"><div style="width: 75%;"></div></div>
+                </div>
+                <div class="card mission-card">
+                     <h4 data-lang-key="academy_mission1_title">Mission: Fact-Check a Local Claim</h4>
+                     <p data-lang-key="academy_mission1_desc">Verify a local rumor and submit your findings.</p>
+                     <div class="progress-bar"><div style="width: 20%;"></div></div>
+                </div>
+                 <div class="card mission-card">
+                     <h4 data-lang-key="academy_course2_title">Course: Conflict De-escalation</h4>
+                     <p data-lang-key="academy_course2_desc">Master techniques to calm tense situations online and offline.</p>
+                     <div class="progress-bar"><div style="width: 0%;"></div></div>
+                </div>
+            </div>
+        </main>
+
+        <nav class="bottom-nav">
+            <button class="nav-btn active" data-page="home"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg><span data-lang-key="nav_home">Home</span></button>
+            <button class="nav-btn" data-page="atlas"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.25c-.845-.423-1.878.107-1.878.98v8.25c0 .872.933 1.402 1.763.98l3.869-1.934c.317-.159.69-.159-1.006 0l4.875 2.437a1.125 1.125 0 010 2.012z" /></svg><span data-lang-key="nav_atlas">Atlas</span></button>
+            <button class="nav-btn" data-page="report"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span data-lang-key="nav_report">Report</span></button>
+            <button class="nav-btn" data-page="debunk"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z" /></svg><span data-lang-key="nav_debunk">Debunk</span></button>
+            <button class="nav-btn" data-page="academy"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path d="M12 14l9-5-9-5-9 5 9 5z" /> <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-5.998 12.078 12.078 0 01.665-6.479L12 14z" /> <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-5.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222 4 2.222V20M12 14.75L6.25 18v-7.5L12 7.25l5.75 3.25V18L12 14.75z" /></svg><span data-lang-key="nav_academy">Academy</span></button>
+        </nav>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- LANGUAGE TRANSLATION LOGIC ---
+            const translations = {
+                en: {
+                    home_title: "Welcome, Peacemaker", home_report: "Report a Threat", home_atlas: "Risk Atlas", home_debunk: "Debunk Rumor", home_academy: "My Academy",
+                    home_alerts_title: "Recent Alerts", home_alert1: "<strong>Sylhet:</strong> High tension reported due to misinformation about land disputes.", home_alert2: "<strong>Dhaka:</strong> Increased online hate speech targeting student groups.",
+                    atlas_title: "Living Atlas", atlas_subtitle: "Click on a division to view its live data summary.", atlas_select_division: "Select a Division",
+                    map_tension: "Tension Gradient", map_resources: "Resource Voids", map_resilience: "Resilience Score",
+                    report_title: "Submit Anonymous Report", report_threat_type_label: "Type of Threat", report_option_misinformation: "Misinformation / Rumor",
+                    report_option_hate_speech: "Hate Speech", report_option_incitement: "Incitement to Violence", report_option_gathering: "Public Gathering Threat",
+                    report_details_label: "Details of the Incident", report_details_placeholder: "Describe what you saw or heard...", report_location_label: "Location (District)",
+                    report_location_placeholder: "e.g., Gazipur, Dhaka", report_success_message: "Report Submitted Anonymously! Thank you.", report_submit_button: "Submit Securely",
+                    report_zkp_notice: "Your identity is protected with Zero-Knowledge Proofs.",
+                    debunk_title: "Truth Packet Generator", debunk_subtitle: "Enter a rumor to generate a shareable \"Truth Packet\" that debunks it.", debunk_input_label: "Enter Rumor",
+                    debunk_input_placeholder: "e.g., 'Schools will be closed tomorrow...'", debunk_button: "Analyze & Debunk", debunk_loader_text: "🧠 Accessing knowledge base... Analyzing claim...",
+                    debunk_card_title: "RUMOR DEBUNKED", debunk_claim_label: "Claim", debunk_verdict_label: "Verdict", debunk_summary_label: "Summary",
+                    academy_title: "Shanti-Prohori Academy", academy_subtitle: "Complete missions to build a more peaceful community and earn certifications.",
+                    academy_course1_title: "Course: Digital Literacy 101", academy_course1_desc: "Learn to spot fake news and manipulated images.",
+                    academy_mission1_title: "Mission: Fact-Check a Local Claim", academy_mission1_desc: "Verify a local rumor and submit your findings.",
+                    academy_course2_title: "Course: Conflict De-escalation", academy_course2_desc: "Master techniques to calm tense situations online and offline.",
+                    nav_home: "Home", nav_atlas: "Atlas", nav_report: "Report", nav_debunk: "Debunk", nav_academy: "Academy"
+                },
+                bn: {
+                    home_title: "স্বাগতম, শান্তিরক্ষী", home_report: "হুমকির রিপোর্ট করুন", home_atlas: "ঝুঁকি মানচিত্র", home_debunk: "গুজব যাচাই", home_academy: "আমার একাডেমি",
+                    home_alerts_title: "সাম্প্রতিক সতর্কতা", home_alert1: "<strong>সিলেট:</strong> জমির বিরোধ নিয়ে ভুল তথ্যের কারণে উচ্চ উত্তেজনা المبلغ।", home_alert2: "<strong>ঢাকা:</strong> ছাত্রদলকে লক্ষ্য করে অনলাইনে বিদ্বেষমূলক বক্তব্য বৃদ্ধি।",
+                    atlas_title: "সজীব মানচিত্র", atlas_subtitle: "সরাসরি ডেটা দেখতে যেকোনো বিভাগের উপর ক্লিক করুন।", atlas_select_division: "একটি বিভাগ নির্বাচন করুন",
+                    map_tension: "উত্তেজনার স্তর", map_resources: "সম্পদের অভাব", map_resilience: "সহনশীলতা স্কোর",
+                    report_title: "নামহীন রিপোর্ট জমা দিন", report_threat_type_label: "হুমকির প্রকার", report_option_misinformation: "ভুল তথ্য / গুজব",
+                    report_option_hate_speech: "বিদ্বেষমূলক বক্তব্য", report_option_incitement: "সহিংসতায় উসকানি", report_option_gathering: "জনসমাবেশের হুমকি",
+                    report_details_label: "ঘটনার বিবরণ", report_details_placeholder: "আপনি যা দেখেছেন বা শুনেছেন তা বর্ণনা করুন...", report_location_label: "অবস্থান (জেলা)",
+                    report_location_placeholder: "যেমন, গাজীপুর, ঢাকা", report_success_message: "রিপোর্ট গোপনে জমা দেওয়া হয়েছে! ধন্যবাদ।", report_submit_button: "সুরക്ഷിভাবে জমা দিন",
+                    report_zkp_notice: "জিরো-নলেজ প্রুফের মাধ্যমে আপনার পরিচয় সুরক্ষিত।",
+                    debunk_title: "সত্য তথ্য জেনারেটর", debunk_subtitle: "একটি গুজব লিখুন এবং যাচাইকৃত তথ্য তৈরি করুন।", debunk_input_label: "গুজব লিখুন",
+                    debunk_input_placeholder: "যেমন, 'আগামীকাল স্কুল বন্ধ থাকবে...'", debunk_button: "বিশ্লেষণ ও যাচাই করুন", debunk_loader_text: "🧠 তথ্যভান্ডার অ্যাক্সেস করা হচ্ছে... দাবি বিশ্লেষণ করা হচ্ছে...",
+                    debunk_card_title: "গুজব যাচাই সম্পন্ন", debunk_claim_label: "দাবি", debunk_verdict_label: "ফলাফল", debunk_summary_label: "সারসংক্ষেপ",
+                    academy_title: "শান্তি-প্রহরী একাডেমি", academy_subtitle: "একটি শান্তিপূর্ণ সমাজ গড়তে মিশন সম্পূর্ণ করুন এবং সার্টিফিকেট অর্জন করুন।",
+                    academy_course1_title: "কোর্স: ডিজিটাল লিটারেসি ১০১", academy_course1_desc: "ভুয়া খবর এবং সম্পাদিত ছবি সনাক্ত করতে শিখুন।",
+                    academy_mission1_title: "মিশন: একটি স্থানীয় দাবি যাচাই করুন", academy_mission1_desc: "একটি স্থানীয় গুজব যাচাই করে আপনার সন্ধান জমা দিন।",
+                    academy_course2_title: "কোর্স: দ্বন্দ্ব নিরসন", academy_course2_desc: "অনলাইন এবং অফলাইনে উত্তেজনাপূর্ণ পরিস্থিতি শান্ত করার কৌশল শিখুন।",
+                    nav_home: "হোম", nav_atlas: "মানচিত্র", nav_report: "রিপোর্ট", nav_debunk: "যাচাই", nav_academy: "একাডেমি"
+                }
+            };
+            
+            const langSwitcher = document.getElementById('lang-switcher');
+            let currentLang = 'en';
+
+            function setLanguage(lang) {
+                document.documentElement.lang = lang;
+                document.querySelectorAll('[data-lang-key]').forEach(el => {
+                    const key = el.getAttribute('data-lang-key');
+                    const translation = translations[lang][key];
+                    if (translation) {
+                        if (el.placeholder !== undefined) {
+                            el.placeholder = translation;
+                        } else {
+                            el.innerHTML = translation;
+                        }
+                    }
+                });
+            }
+
+            langSwitcher.addEventListener('click', () => {
+                currentLang = currentLang === 'en' ? 'bn' : 'en';
+                langSwitcher.textContent = currentLang === 'en' ? 'BN' : 'EN';
+                setLanguage(currentLang);
+            });
+            
+            // --- GENERAL APP LOGIC ---
+            const navButtons = document.querySelectorAll('.nav-btn');
+            const quickActionCards = document.querySelectorAll('.action-card');
+            const pages = document.querySelectorAll('.page');
+            const appContent = document.getElementById('app-content');
+
+            function switchPage(pageId) {
+                navButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.page === pageId));
+                pages.forEach(page => page.classList.toggle('active', page.id === `page-${pageId}`));
+                appContent.scrollTop = 0;
+            }
+
+            navButtons.forEach(button => button.addEventListener('click', () => switchPage(button.dataset.page)));
+            quickActionCards.forEach(card => card.addEventListener('click', () => switchPage(card.dataset.pageTarget)));
+
+            const mapInfo = document.getElementById('map-info');
+            const mapPaths = document.querySelectorAll('#bangladesh-map path');
+            const mapData = {
+                dhaka: { name: 'Dhaka', tension: 'High', resources: 'Low', resilience: 'Medium' },
+                chittagong: { name: 'Chittagong', tension: 'Medium', resources: 'Medium', resilience: 'High' },
+                rajshahi: { name: 'Rajshahi', tension: 'Low', resources: 'High', resilience: 'High' },
+                khulna: { name: 'Khulna', tension: 'Medium', resources: 'Medium', resilience: 'Medium' },
+                barisal: { name: 'Barisal', tension: 'Low', resources: 'Medium', resilience: 'High' },
+                sylhet: { name: 'Sylhet', tension: 'High', resources: 'Low', resilience: 'Low' },
+                rangpur: { name: 'Rangpur', tension: 'Low', resources: 'High', resilience: 'Medium' },
+                mymensingh: { name: 'Mymensingh', tension: 'Medium', resources: 'Low', resilience: 'Medium' }
+            };
+            mapPaths.forEach(path => {
+                path.addEventListener('click', () => {
+                    mapPaths.forEach(p => p.classList.remove('active-region'));
+                    path.classList.add('active-region');
+                    const regionData = mapData[path.id];
+                    mapInfo.innerHTML = `
+                        <h4>${regionData.name} Division</h4>
+                        <p><strong>${translations[currentLang].map_tension}:</strong> <span class="level-${regionData.tension.toLowerCase()}">${regionData.tension}</span></p>
+                        <p><strong>${translations[currentLang].map_resources}:</strong> <span class="level-${regionData.resources.toLowerCase()}">${regionData.resources}</span></p>
+                        <p><strong>${translations[currentLang].map_resilience}:</strong> <span class="level-${regionData.resilience.toLowerCase()}">${regionData.resilience}</span></p>
+                    `;
+                });
+            });
+            
+            const reportForm = document.getElementById('report-form');
+            const successMessage = document.getElementById('form-success');
+            reportForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                successMessage.style.display = 'block';
+                reportForm.reset();
+                setTimeout(() => { successMessage.style.display = 'none'; }, 4000);
+            });
+
+            const debunkBtn = document.getElementById('debunk-btn');
+            const rumorInput = document.getElementById('rumor-input');
+            const outputDiv = document.getElementById('truth-packet-output');
+            const loader = document.getElementById('debunk-loader');
+
+            debunkBtn.addEventListener('click', async () => {
+                if (rumorInput.value.trim() === '') { return; }
+                loader.style.display = 'block';
+                outputDiv.classList.remove('visible');
+                outputDiv.innerHTML = '';
+                
+                setTimeout(() => {
+                    const geminiResponse = {
+                        verdict: "False",
+                        explanation: "This is <strong>FALSE</strong>. Official sources have not made this announcement.",
+                        explanation_bn: "এটি <strong>মিথ্যা</strong>। সরকারী সূত্র থেকে এই ধরনের ঘোষণা আসেনি।",
+                    };
+                    
+                    loader.style.display = 'none';
+                    const langContent = currentLang === 'en'
+                        ? `<p><strong>${translations[currentLang].debunk_verdict_label}:</strong> ${geminiResponse.explanation}</p>`
+                        : `<p><strong>${translations[currentLang].debunk_verdict_label}:</strong> ${geminiResponse.explanation_bn}</p>`;
+
+                    outputDiv.innerHTML = `
+                        <div class="truth-packet-card verdict-false">
+                            <div class="icon">❌</div>
+                            <div>
+                                <h5 data-lang-key="debunk_card_title">${translations[currentLang].debunk_card_title}</h5>
+                                <p><strong>${translations[currentLang].debunk_claim_label}:</strong> "${rumorInput.value}"</p>
+                                ${langContent}
+                            </div>
+                        </div>
+                    `;
+                    outputDiv.classList.add('visible');
+                }, 2500);
+            });
+            
+            // Set initial language
+            setLanguage(currentLang);
+        });
+    </script>
+</body>
+</html>
